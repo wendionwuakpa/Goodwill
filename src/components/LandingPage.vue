@@ -2,6 +2,7 @@
     <section class="landing-container">
         <h3 class="header"> Welcome to Goodwill Donation Service! </h3>
         <span class="forms-container">
+            <!-- Sign In Section -->
             <section class="sign-in form">
                 <h3 class="form-header"> Sign In </h3>
                 <div>
@@ -15,6 +16,7 @@
                 <input :disabled="signInDisabled" type="button" value="Sign In" v-on:click="signInHandler"/>
                 <p class="form-end"> {{ errorSignIn }} </p>
             </section>
+            <!-- Create Account Section -->
             <section class="create-account form">
                 <h3 class="form-header"> Create Account </h3>
                 <div>
@@ -33,6 +35,7 @@
                 <input :disabled="createDisabled" type="button" value="Create Account" v-on:click="createAccountHandler"/>
                 <p class="form-end"> {{ errorCreate }} </p>
             </section>
+
         </span>
     </section>
 </template>

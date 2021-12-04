@@ -31,7 +31,7 @@ async function getUserWithCredentials(username, password) {
 // adds user with credentials
 async function addUserWithCredentials(username, password) {
     try {
-        const userFound = await User.findOne({ username : username});
+        const userFound = await User.findOne({ username : username });
         if (userFound != null) {
             return "Username is already claimed.";
         }
@@ -61,34 +61,10 @@ async function getAllClothingItems() {
 };
 
 
-// gets all unclaimed clothing items
-async function getAllUnclaimedClothingItems() {
-    try {
-      const unclaimed_clothing = await Clothing.find({ claimed : false }); // finds all Clothing Items
-      return unclaimed_clothing;
-    } catch(err) {
-      return "Something went wrong in getAllUnclaimedClothingItems."
-    }
-};
-
-
-// gets all clothing items claimed by user with specified username
-async function getUserClaimedClothingItems(username) {
-    try {
-      const user = await User.find({username: username}); // finds user
-      const clothing_ids = user.claimed_clothes; // ClothingItem ids stored in user's claimed clothing
-      const claimed_clothes = await Clothing.find({ _id : { $in : clothing_ids }});
-      return claimed_clothes;
-    } catch(err) {
-      return "Something went wrong in getUserClaimedClothingItems."
-    }
-};
-
-
 // gets all clothing items donated by user with specified username
 async function getUserDonatedClothingItems(username) {
     try {
-      const user = await User.find({username: username}); // finds user
+      const user = await User.findOne({username: username}); // finds user
       const clothing_ids = user.donated_clothes; // ClothingItem ids stored in user's claimed clothing
       const donated_clothes = await Clothing.find({ _id: { $in : clothing_ids }});
       return donated_clothes;
@@ -97,17 +73,51 @@ async function getUserDonatedClothingItems(username) {
     }
 };
 
+// gets all clothing items donated by user with specified username
+async function getUserPendingClothingItems(username) {
+    try {
+        console.log(username);
+      const user = await User.findOne({username: username}); // finds user
+      console.log(user);
+      let clothing_ids = user.donated_clothes; // ClothingItem ids stored in user's claimed clothing
+      console.log(user.donated_clothes);
+      const donated_clothes = await Clothing.find({ _id: { $in : clothing_ids }});
+      const pending_clothes = donated_clothes.filter(item => item.picked_up == false);
+      return pending_clothes;
+    } catch(err) {
+      return "Something went wrong in getUserPendingClothingItems."
+    }
+};
+
+// gets all clothing items donated by user with specified username
+async function getUserPickedUpClothingItems(username) {
+    try {
+      const user = await User.findOne({username: username}); // finds user
+      const clothing_ids = user.donated_clothes; // ClothingItem ids stored in user's claimed clothing
+      const donated_clothes = await Clothing.find({ _id: { $in : clothing_ids }});
+      const picked_up_clothes = donated_clothes.filter(item => item.picked_up == true);
+      return picked_up_clothes;
+    } catch(err) {
+      return "Something went wrong in getUserPickedUpClothingItems."
+    }
+};
 
 // adds a clothing item
-async function donateClothingItem(clothing_type, image, donator, title) {
+async function donateClothingItem(clothing_type, condition, size, brand, image, donator, title) {
     try {
+        console.log('hi');
+        console.log(clothing_type, image, donator, title);
         // add clothing item
         const clothing_item = new Clothing({
             clothing_type: clothing_type,
+            condition: condition,
+            size: size,
+            brand: brand,
             image: image,
             donator: donator,
             title: title
         });
+        console.log(clothing_item);
         await clothing_item.save();
 
         // add clothing item to user's donated_clothes
@@ -121,33 +131,13 @@ async function donateClothingItem(clothing_type, image, donator, title) {
 } 
 
 
-// claims a clothing item for user with specified username
-async function claimClothingItem(username, id) {
-    try {
-        const clothing_item = await Clothing.findOne({ _id : id }); //We make sure that names are unique
-        clothing_item.claimed = true; // claim the item
-        clothing_item.date_claimed = new Date(); // sets claim date
-        await clothing_item.save();
-
-        // add clothing item to user's claimed_clothes
-        const user = await getUser(username); // calls function to get user with username
-        user.claimed_clothes.push(id);
-        await user.save()
-        return clothing_item; 
-    } catch(err) {
-        return "Something went wrong in claimClothingItem.";
-    }
-} 
-
-
 module.exports = Object.freeze({
     getUser,
     getUserWithCredentials,
     addUserWithCredentials,
     getAllClothingItems,
-    getAllUnclaimedClothingItems,
-    getUserClaimedClothingItems,
     getUserDonatedClothingItems,
+    getUserPendingClothingItems,
+    getUserPickedUpClothingItems,
     donateClothingItem,
-    claimClothingItem,
   });

@@ -15,19 +15,18 @@ const ClothingItemSchema = new Schema(
                 "Jacket",
                 "Sweater"
             ],
+            required: true
         },
 
         // date of when clothing was donated
         // don't need to specify date; mongo will automatically make a default when it's created
-        "date_donated": {
+        "date_uploaded": {
             type: Date,
             required: false,
             default: new Date()
         },
 
-        // date of when clothing was claimed
-        // don't need to specify; mongo will automatical set defaul to null
-        "date_claimed": {
+        "date_pickup": {
             type: Date,
             required: false,
             default: null
@@ -51,9 +50,34 @@ const ClothingItemSchema = new Schema(
             required: true
         },
 
-        // boolean indicating if item has been claimed
-        // don't need to specify; automatically sets claimed to false when created
-        "claimed": {
+        "condition": {
+            type: String,
+            enum: [
+                "Brand New",
+                "Almost New",
+                "Used"
+            ],
+            required: true
+        },
+
+        "size": {
+            type: String,
+            enum: [
+                "Extra Small",
+                "Small",
+                "Medium",
+                "Large",
+                "Extra Large"
+            ],
+            required: true
+        },
+
+        "brand": {
+            type: String,
+            required: true,
+        },
+
+        "picked_up": {
             type: Boolean,
             required: false,
             default: false

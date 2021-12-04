@@ -52,32 +52,26 @@ function getAllClothing(callbackSuccess, callbackFailure) {
     .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
 }
 
-function getAllUnclaimedClothing(callbackSuccess, callbackFailure) {
-  axios.get('/api/clothing/unclaimed') 
-    .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
-    .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
-}
-
-function getUserClaimedClothing(fields, callbackSuccess, callbackFailure) {
-  axios.get('/api/clothing/claimed/' + fields.username) 
-    .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
-    .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
-}
-
 function getUserDonatedClothing(fields, callbackSuccess, callbackFailure) {
   axios.get('/api/clothing/donated/' + fields.username) 
     .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
     .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
 }
 
-function donateClothingItem(fields, callbackSuccess, callbackFailure) {
-  axios.post('/api/clothing', fields) 
+function getUserPendingClothing(fields, callbackSuccess, callbackFailure) {
+  axios.get('/api/clothing/pending/' + fields.username) 
     .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
     .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
 }
 
-function claimClothingItem(fields, callbackSuccess, callbackFailure) {
-  axios.post('/api/claim', fields) 
+function getUserPickedUpClothing(fields, callbackSuccess, callbackFailure) {
+  axios.get('/api/clothing/pickedup/' + fields.username) 
+    .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
+    .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
+}
+
+function donateClothingItem(fields, callbackSuccess, callbackFailure) {
+  axios.post('/api/clothing', fields) 
     .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
     .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
 }

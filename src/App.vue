@@ -5,7 +5,7 @@
           Goodwill Donation Service
         </h1> 
         <AccountBar 
-          v-if="username"
+          v-if="username && username != 'null'"
           v-on:signout="signOutHandler"
           v-bind:username="username"
         />

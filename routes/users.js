@@ -16,7 +16,7 @@ const controller = require("./controller");
  */
 router.post(
     '/', 
-   async (req, res) => {
+    async (req, res) => {
         // POST has req.body
         let username = req.body.username;
         let password = req.body.password;

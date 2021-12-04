@@ -46,6 +46,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: false, parameterLimit: 500
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, isProduction ? 'dist' : 'public')));
 
+// router endpoints
 app.use('/', indexRouter);
 app.use('/api/users', userRouter);
 app.use('/api/clothing', clothingRouter);

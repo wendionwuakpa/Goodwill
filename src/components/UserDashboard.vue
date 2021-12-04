@@ -9,44 +9,68 @@
                     <input type="text" v-model="title">
                 </div> 
                 <div>
-                    <label>Clothing Type</label>
-                    <input type="text" v-model="clothingType">
+                    <label for="types">Clothing Type</label>
+                    <select class="dropdown" v-model="clothingType">
+                        <option v-for="option in typeOptions" v-bind:key="option.value" v-bind:value="option.value">
+                            {{ option.text }}
+                        </option> 
+                    </select>
+                </div>
+                <div>
+                    <label>Brand</label>
+                    <input type="text" v-model="brand">
+                </div>
+                <div>
+                    <label for="types">Size</label>
+                    <select class="dropdown" v-model="size">
+                        <option v-for="option in sizeOptions" v-bind:key="option.value" v-bind:value="option.value">
+                            {{ option.text }}
+                        </option> 
+                    </select>
+                </div>
+                <div>
+                    <label for="types">Condition</label>
+                    <select class="dropdown" v-model="condition">
+                        <option v-for="option in conditionOptions" v-bind:key="option.value" v-bind:value="option.value">
+                            {{ option.text }}
+                        </option> 
+                    </select>
                 </div>
                 <div>
                     <label>Image Link</label>
                     <input type="text" v-model="imageLink">
                 </div>
-                <input type="button" value="Upload" v-on:click="uploadHandler"/>
+                <input :disabled="!formComplete" type="button" value="Upload" v-on:click="uploadHandler"/>
                 <p class="form-end"> {{ errorDonate }} </p>
             </section>
             <section class="dash-area list">
                 <h3> Clothing Items </h3>
                 <div class="toggle-container">
-                    <input type="button" value="Available" v-on:click="getUnclaimed"/>
-                    <input type="button" value="Donated"/>
-                    <input type="button" value="Claimed"/>
+                    <input :class="{active: activeList=='donated'}" type="button" value="All Donated" v-on:click="getDonated"/>
+                    <input :class="{active: activeList=='pending'}" type="button" value="Pending" v-on:click="getPending"/>
+                    <input :class="{active: activeList=='pickedUp'}" type="button" value="Picked Up" v-on:click="getPickedUp"/>
                 </div>
-                <li v-if="activeList == 'unclaimed'">
-                    <ClothingItem 
-                        v-for="item in unclaimedClothingItems"
-                        v-bind:key="item"
-                        v-bind:item="item"
-                    />
-                </li>
-                <li v-if="activeList == 'donated'">
+                <section class="item-list scrollbox" v-if="activeList == 'donated'">
                     <ClothingItem 
                         v-for="item in donatedClothingItems"
-                        v-bind:key="item"
+                        v-bind:key="item._id"
                         v-bind:item="item"
                     />
-                </li>
-                <li v-if="activeList == 'claimed'">
+                </section>
+                <section class="item-list scrollbox" v-if="activeList == 'pending'">
                     <ClothingItem 
-                        v-for="item in claimedClothingItems"
+                        v-for="item in pendingClothingItems"
                         v-bind:key="item"
                         v-bind:item="item"
                     />
-                </li>
+                </section>
+                <section class="item-list scrollbox" v-if="activeList == 'pickedUp'">
+                    <ClothingItem 
+                        v-for="item in pickedUpClothingItems"
+                        v-bind:key="item"
+                        v-bind:item="item"
+                    />
+                </section>
             </section>
         </span>
     </section>
@@ -61,40 +85,108 @@
         props: ['username'],
         data() {
             return {
-                activeList: 'unclaimed',
-                donatedClothingItems: null,
-                claimedClothingItems: null,
-                unclaimedClothingItems: null,
+                activeList: 'donated',
+                donatedClothingItems: [],
+                pendingClothingItems: [],
+                pickedUpClothingItems: [],
                 title: '',
                 imageLink: '',
+                errorDonate: null,
                 clothingType: '',
-                errorDonate: null
+                condition: '',
+                size: '',
+                typeOptions: [
+                    { text: 'Shirt', value: 'Shirt'},
+                    { text: 'Sweater', value: 'Sweater'},
+                    { text: 'Pants', value: 'Pants'},
+                    { text: 'Jacket', value: 'Jacket'},
+                    { text: 'Shorts', value: 'Shorts'},
+                ],
+                sizeOptions: [
+                    { text: 'Extra Small', value: 'Extra Small'},
+                    { text: 'Small', value: 'Small'},
+                    { text: 'Medium', value: 'Medium'},
+                    { text: 'Large', value: 'Large'},
+                    { text: 'Extra Large', value: 'Extra Large'},
+                ],
+                conditionOptions: [
+                    { text: 'Brand New', value: 'Brand New'},
+                    { text: 'Like New', value: 'Like New'},
+                    { text: 'Used', value: 'Used'},
+                ],
+                brand: ''
+            }
+        },
+        computed: {
+            formComplete: function() {
+                return (
+                    this.title != '' && 
+                    this.imageLink != '' && 
+                    this.clothingType != '' && 
+                    this.condition != '' && 
+                    this.size != '' && 
+                    this.brand != ''
+                );
             }
         },
         mounted() {
-            this.getUnclaimed();
+            this.getDonated();
         },
         methods: {
-            getUnclaimed() {
-                getAllUnclaimedClothing(this.unclaimedSuccess, this.unclaimedError);
+            getDonated() {
+                const fields = {
+                    username: this.username
+                };
+                getUserDonatedClothing(fields, this.donatedSuccess, this.donatedError);
+                this.activeList = 'donated';
+            },
+            getPending() {
+                const fields = {
+                    username: this.username
+                };
+                getUserPendingClothing(fields, this.pendingSuccess, this.pendingError);
+                this.activeList = 'pending';
+            },
+            getPickedUp() {
+                const fields = {
+                    username: this.username
+                };
+                getUserPickedUpClothing(fields, this.pickedUpSuccess, this.pickedUpError);
+                this.activeList = 'pickedUp';
             },
             uploadHandler() {
                 const fields = {
                     title: this.title,
                     clothing_type: this.clothingType,
+                    size: this.size,
+                    brand: this.brand,
+                    condition: this.condition,
                     image: this.imageLink,
                     donator: this.username
                 }
                 donateClothingItem(fields, this.uploadSuccess, this.uploadFailure);
             },
-            unclaimedSuccess(obj) {
-                this.unclaimedClothingItems = obj.data;
+            donatedSuccess(obj) {
+                this.donatedClothingItems = obj.data;
             },
-            unclaimedError(obj) {
+            donatedError(obj) {
+                console.log(obj);
+            },
+            pendingSuccess(obj) {
+                this.pendingClothingItems = obj.data;
+            },
+            pendingError(obj) {
+                console.log(obj);
+            },
+            pickedUpSuccess(obj) {
+                this.pickedUpClothingItems = obj.data;
+            },
+            pickedUpError(obj) {
                 console.log(obj);
             },
             uploadSuccess(obj) {
-                this.getUnclaimed();
+                this.getDonated();
+                this.getPending();
             },
             uploadFailure(obj) {
                 console.log(obj);
@@ -117,6 +209,26 @@
         border: solid;
         border-color: var(--lightblue);
     }
+
+    input:focus {
+        outline: none !important;
+        border-color: var(--orange) !important;
+    }
+
+    input:disabled {
+        background-color: lightgray;
+        color: gray;
+    }
+
+    input:hover:disabled {
+        background-color: lightgray;
+        color: gray;
+    }
+
+    .active {
+        background: var(--blue);
+    }
+
     section > div {
         margin-bottom: 10px;
     }
@@ -124,6 +236,20 @@
     p {
         margin: 0px;
         color: red;
+    }
+
+    .dropdown {
+        box-sizing: border-box;
+        border: solid;
+        border-radius: 4px;
+        border-color: var(--lightblue);
+        width: 100%;
+        height: 34px;
+    }
+
+    .dropdown:focus {
+        outline: none !important;
+        border-color: var(--orange) !important;
     }
 
     .form-end {
@@ -140,7 +266,6 @@
     .dash-area {
         display: flex;
         flex-direction: column;
-        width: 50%;
         padding: 20px;
         padding-top: 0px;
     }
@@ -164,17 +289,24 @@
 
     .add-form {
         background: var(--gray);
+        width: 30%;
     }
 
     .list {
         background: white;
+        width: 70%;
         color: black;
     }
 
-    ol {
-        list-style-type: none;
-        visibility: 'hidden';
+    .item-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        max-height: calc(100vh - 220px);
+        overflow-y: auto;
     }
+
 
     h3 {
         text-align: center;
@@ -191,22 +323,23 @@
     .scrollbox {
         visibility: visible;
         flex-grow: 1;
-        padding-left: 20px;
         padding-right: 20px;
         margin: 0px;
-        width: calc(100% - 40px);
+        width: calc(100% - 20px);
         overflow-x: hidden;
     }
 
     /* customize scrollbar for dark theme */
     ::-webkit-scrollbar {
-        width: 2vh;  /* for vertical scrollbars */
-        height: 2vh; /* for horizontal scrollbars */
+        width: 1vh;  /* for vertical scrollbars */
+        height: 1vh; /* for horizontal scrollbars */
     }
     ::-webkit-scrollbar-track {
         background: rgba(111, 143, 186, 0.1);
+        border-radius: .5vh;
     }
     ::-webkit-scrollbar-thumb {
-        background: rgba(111, 143, 186, 0.2);
+        background: var(--blue);
+        border-radius: .5vh;
     }
 </style>

@@ -13,13 +13,6 @@ const UserSchema = new Schema(
             required: true,
         },
 
-        "claimed_clothes": [{
-            type: Schema.Types.ObjectId,
-            ref: 'ClothingItem',
-            required: false,
-            default: []
-        }],
-
         "donated_clothes": [{
             type: Schema.Types.ObjectId,
             ref: 'ClothingItem',
