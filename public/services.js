@@ -21,13 +21,13 @@ function showResponse(axiosResponse, callback) {
 // USER SERVICES
 
 function addUser(fields, callbackSuccess, callbackFailure) {
-  axios.post('/api/users', fields)  // req.body fields are included like this
+  axios.post('/api/users', fields)
     .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
     .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
 }
 
 function getUser(fields, callbackSuccess, callbackFailure) {
-  axios.get('/api/users/' + fields.username + '/' + fields.password) // req.param fields are included like this
+  axios.get('/api/users/' + fields.username + '/' + fields.password)
     .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
     .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
 }
