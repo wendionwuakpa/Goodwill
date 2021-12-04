@@ -62,8 +62,6 @@
                 baths: 0,
                 petsAllowed: false,
                 capacity: 0,
-               // description :"",
-               // othernotes: ""
             }
         },
 
@@ -127,8 +125,6 @@
         background-color: var(--orange);
         color: var(--std-color);
         text-align: center !important;
-        /* box-shadow: 0px 2px 4px var(--darkblue); */
-        clip-path: inset(0px -4px -4px -4px);
     }
 
     .dashboard {
@@ -145,7 +141,6 @@
     .listingInputSection {
         padding: 20px;
         background-color: var(--orange);
-        border-radius: 15px;
     }
     .addListingInput {
         display: flex;

@@ -204,17 +204,6 @@
         width: 100%;
     }
 
-    input[type="text"], input[type="password"] {
-        box-sizing: border-box;
-        border: solid;
-        border-color: var(--lightblue);
-    }
-
-    input:focus {
-        outline: none !important;
-        border-color: var(--orange) !important;
-    }
-
     input:disabled {
         background-color: lightgray;
         color: gray;
@@ -239,17 +228,9 @@
     }
 
     .dropdown {
-        box-sizing: border-box;
-        border: solid;
-        border-radius: 4px;
-        border-color: var(--lightblue);
         width: 100%;
-        height: 34px;
-    }
-
-    .dropdown:focus {
-        outline: none !important;
-        border-color: var(--orange) !important;
+        height: 40px;
+        padding: 1px;
     }
 
     .form-end {
@@ -273,18 +254,6 @@
     .toggle-container {
         display: flex;
         width: 100%;
-    }
-
-    .toggle-container > * {
-        border-radius: 0px;
-    }
-
-    .toggle-container > *:first-child {
-        border-radius: 4px 0px 0px 4px;
-    }
-
-    .toggle-container > *:last-child {
-        border-radius: 0px 4px 4px 0px;
     }
 
     .add-form {
@@ -329,17 +298,4 @@
         overflow-x: hidden;
     }
 
-    /* customize scrollbar for dark theme */
-    ::-webkit-scrollbar {
-        width: 1vh;  /* for vertical scrollbars */
-        height: 1vh; /* for horizontal scrollbars */
-    }
-    ::-webkit-scrollbar-track {
-        background: rgba(111, 143, 186, 0.1);
-        border-radius: .5vh;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: var(--blue);
-        border-radius: .5vh;
-    }
 </style>

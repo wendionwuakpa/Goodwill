@@ -122,19 +122,6 @@
         width: 100%;
     }
 
-    input[type="text"], input[type="password"] {
-        box-sizing: border-box;
-        border: solid;
-        border-color: var(--lightblue);
-    }
-
-    input[type="text"]:focus, input[type="password"]:focus {
-        box-sizing: border-box;
-        border: solid;
-        border-color: var(--orange);
-        outline: none;
-    }
-
     input:disabled {
         background-color: lightgray;
         color: gray;
@@ -162,7 +149,6 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-        flex-basis: 0 1 0px;
     }
 
     .forms-container {

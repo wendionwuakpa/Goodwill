@@ -1,15 +1,7 @@
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-// const session = require('express-session');
+const controller = require("./controller"); 
 require('dotenv').config();
-const isProduction = process.env.NODE_ENV === 'production';
-const indexRouter = require('./routes/index');
-const userRouter = require('./routes/users');
-const clothingRouter = require('./routes/clothing');
-
-// const history = require('connect-history-api-fallback');
 
 // database
 const cors = require('cors');
@@ -30,34 +22,94 @@ db.mongoose
 
 
 const app = express();
-
 app.use(cors());
-
-// Set up user session
-// app.use(session({
-//     secret: 'URL-shortener',
-//     resave: true,
-//     saveUninitialized: true
-// }));
-
-app.use(logger('dev'));
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({ limit: '50mb', extended: false, parameterLimit: 50000}));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, isProduction ? 'dist' : 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// router endpoints
-app.use('/', indexRouter);
-app.use('/api/users', userRouter);
-app.use('/api/clothing', clothingRouter);
+app.get('/', (req, res) => {
+  res.render('index', { title: 'Goodwill Donation Service' });
+});
 
-// Catch all other routes into a meaningful error message
-// can only go to these routes directly if not already on the website in current tab
-app.all('*', (req, res) => {
-    const errorMessage = `
-      Cannot find the resource <b>${req.url}</b>
-    `;
-    res.status(404).send(errorMessage);
-  });
+app.post(
+  '/api/users/', 
+  async (req, res) => {
+      let username = req.body.username;
+      let password = req.body.password;
+      const user = await controller.addUserWithCredentials(username, password);
+      let status = 200; // status code for ok
+      if (typeof user == "string") {
+          status = 500; // status code for internal server error
+
+      }
+      res.status(status).json(user).end();
+});
+
+app.get('/api/users/:username?/:password?', 
+  async (req, res) => {
+      let username = req.params.username;
+      let password = req.params.password;
+      const user = await controller.getUserWithCredentials(username, password);
+      let status = 200; // status code for ok
+      if (typeof user == "string") {
+        status = 500; // status code for internal server error
+      }
+      res.status(status).json(user).end();
+});
+
+app.get('/api/clothing/', [], async (req, res) => {
+    const clothing = await controller.getAllClothingItems();
+    let status = 200; // status code for ok
+    if (typeof clothing == "string") {
+        status = 500; // status code for internal server error
+    }
+    res.status(status).json(clothing).end(); 
+})
+
+app.get('/api/clothing/donated/:username?', [], async (req, res) => {
+  let username = req.params.username;
+  const clothing = await controller.getUserDonatedClothingItems(username);
+  let status = 200; // status code for ok
+  if (typeof clothing == "string") {
+      status = 500; // status code for internal server error
+  }
+  res.status(status).json(clothing).end(); 
+})
+
+app.get('/api/clothing/pending/:username?', [], async (req, res) => {
+    let username = req.params.username;
+    const clothing = await controller.getUserPendingClothingItems(username);
+    let status = 200; // status code for ok
+    if (typeof clothing == "string") {
+        status = 500; // status code for internal server error
+    }
+    res.status(status).json(clothing).end(); 
+  })
+
+app.get('/api/clothing/pickedup/:username?', [], async (req, res) => {
+    let username = req.params.username;
+    const clothing = await controller.getUserPickedUpClothingItems(username);
+    let status = 200; // status code for ok
+    if (typeof clothing == "string") {
+        status = 500; // status code for internal server error
+    }
+    res.status(status).json(clothing).end(); 
+  })
+
+app.post('/api/clothing/', [], async (req, res) => {
+  let clothing_type = req.body.clothing_type;
+  let condition = req.body.condition;
+  let size = req.body.size;
+  let brand = req.body.brand;
+  let image = req.body.image;
+  let donator = req.body.donator;
+  let title = req.body.title;
+  const clothing_item = await controller.donateClothingItem(clothing_type, condition, size, brand, image, donator, title);
+  let status = 200; // status code for ok
+  if (typeof clothing_item == "string") {
+      status = 500; // status code for internal server error
+  }
+  res.status(status).json(clothing_item).end(); 
+})
 
 module.exports = app;

@@ -49,7 +49,6 @@
     .item-container {
         width: calc(50% - 5px);
         background: var(--orange);
-        border-radius: 8px;
     }
 
     .content {
@@ -70,7 +69,6 @@
 
     img {
         height: 150px;
-        border-radius: 8px;
     }
 
 </style>

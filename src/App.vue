@@ -45,7 +45,7 @@
             }
         },
         mounted() {
-          if (localStorage.user) {
+          if (localStorage.user && localStorage.user != 'null') {
             // not very secure
             let username = localStorage.user;
             let password = localStorage.pass;
@@ -54,6 +54,8 @@
         },
         methods: {
             getUserSuccess(obj) { // obj returned in response
+            console.log('hii');
+            console.log(obj);
               let username = obj.data.username;
               let password = obj.data.password;
               this.signInHandler(username, password)
@@ -83,9 +85,6 @@
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
   color: #2c3e50;
   --std-color: #2c3e50;
   --blue:  #3C8DAD;
@@ -108,8 +107,6 @@
 }
 
 input {
-  border: none;
-  border-radius: 4px;
   height: var(--stdheight);
 }
 
@@ -125,10 +122,6 @@ input[type="button"] {
 input[type="button"]:hover {
     cursor: pointer;
     background-color: var(--blue);
-}
-
-input[type="button"]:focus {
-  outline: none;
 }
 
 .topbar {
@@ -151,10 +144,6 @@ h1 {
   margin-right: auto;
 }
 
-h1:hover {
-  color: var(--lightblue);
-}
-
 .main {
   display: inline-flex;
   width: 100%;
@@ -166,18 +155,5 @@ html, body, #app {
   height: 100vh;
   margin: 0px;
   overflow: hidden;
-}
-
-
-
-.close {
-  float: right;
-  font-weight: bold;
-}
-
-.toggle {
-  display: flex;
-  visibility: hidden;
-  width: 1px;
 }
 </style>

@@ -12,18 +12,6 @@ function showResponse(axiosResponse, callback) {
 }
 
 /**
- * IT IS UNLIKELY THAT YOU WILL WANT TO EDIT THE CODE ABOVE.
- * EDIT THE CODE BELOW TO SEND REQUESTS TO YOUR API.
- * 
- * You can use axios to make API calls like this:
- * const body = { bar: 'baz' };
- * axios.post('/api/foo', body)
- *   .then(showResponse) // on success (Status Code 200)
- *   .catch(showResponse); // on failure (Other Status Code)
- * See https://github.com/axios/axios for more info
- */
-
-/**
  * Fields is an object mapping the names of the form inputs to the values typed in
  * e.g. for addUser, fields has properites 'username' and 'password'
  * callbackSuccess is a function that formats and returns a successful response

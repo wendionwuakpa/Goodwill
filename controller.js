@@ -1,5 +1,5 @@
-const Clothing = require('../models/ClothingItem');
-const User = require('../models/User');
+const Clothing = require('./models/ClothingItem');
+const User = require('./models/User');
 
 // USER ACTIONS
 
