@@ -9,12 +9,13 @@
                 <div class="row"> Type: {{item.size}} </div>
                 <div class="row"> Type: {{item.condition}} </div>
                 <div class="row"> Donated: {{ item.date_uploaded.split("T")[0]}} </div>
-                <input class="delete" type="button" value="Delete"/>
+                <input class="delete" type="button" value="Delete" v-on:click="deleteHandler"/>
             </div>
         </div>
     </div>
 </template>
 
+<script src="../../public/services.js"></script>
 <script>
     export default {
         name: 'ClothingItem',
@@ -27,6 +28,20 @@
             console.log(this.item);
         },
         methods: {
+            deleteHandler() {
+                console.log('delete handler');
+                const fields = {
+                    id: this.item._id
+                };
+                deleteClothingItem(fields, this.deleteSuccess, this.deleteError);
+            },
+            deleteSuccess(obj) {
+                this.$emit('delete');
+            },
+            deleteError(obj) {
+                console.log(obj);
+            }
+            
         }
     }
 </script>

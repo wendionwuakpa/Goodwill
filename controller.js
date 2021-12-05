@@ -105,8 +105,6 @@ async function getUserPickedUpClothingItems(username) {
 // adds a clothing item
 async function donateClothingItem(clothing_type, condition, size, brand, image, donator, title) {
     try {
-        console.log('hi');
-        console.log(clothing_type, image, donator, title);
         // add clothing item
         const clothing_item = new Clothing({
             clothing_type: clothing_type,
@@ -130,6 +128,15 @@ async function donateClothingItem(clothing_type, condition, size, brand, image, 
     }  
 } 
 
+async function deleteClothingItem(id) {
+    try {
+        console.log(id);
+        const deleted = await Clothing.deleteOne({ _id : id});
+        return deleted;
+    } catch(err) {
+        return "Something went wrong in deleteClothingItem.";
+    }
+}
 
 module.exports = Object.freeze({
     getUser,
@@ -140,4 +147,5 @@ module.exports = Object.freeze({
     getUserPendingClothingItems,
     getUserPickedUpClothingItems,
     donateClothingItem,
+    deleteClothingItem
   });

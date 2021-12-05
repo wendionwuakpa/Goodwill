@@ -3,8 +3,6 @@ const path = require('path');
 const controller = require("./controller"); 
 const http = require('http');
 
-// require('dotenv').config();
-
 // database
 const cors = require('cors');
 const db = require('./db/db_config');
@@ -72,9 +70,18 @@ app.get('/api/clothing/', [], async (req, res) => {
     const clothing = await controller.getAllClothingItems();
     let status = 200; // status code for ok
     if (typeof clothing == "string") {
-        status = 500; // status code for internal server error
+      status = 500; // status code for internal server error
     }
     res.status(status).json(clothing).end(); 
+})
+
+app.delete('/api/clothing/:id?', [], async (req, res) => {
+    const deleted = await controller.deleteClothingItem(req.params.id);
+    let status = 200;
+    if (typeof deleted == "string") {
+      status = 500; // status code for internal server error
+    }
+    res.status(status).json(deleted).end();
 })
 
 app.get('/api/clothing/donated/:username?', [], async (req, res) => {

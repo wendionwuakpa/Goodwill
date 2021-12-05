@@ -53,6 +53,7 @@
                 <section class="item-list scrollbox" v-if="activeList == 'donated'">
                     <ClothingItem 
                         v-for="item in donatedClothingItems"
+                        v-on:delete="deleteHandler"
                         v-bind:key="item._id"
                         v-bind:item="item"
                     />
@@ -60,6 +61,7 @@
                 <section class="item-list scrollbox" v-if="activeList == 'pending'">
                     <ClothingItem 
                         v-for="item in pendingClothingItems"
+                        v-on:delete="deleteHandler"
                         v-bind:key="item"
                         v-bind:item="item"
                     />
@@ -67,6 +69,7 @@
                 <section class="item-list scrollbox" v-if="activeList == 'pickedUp'">
                     <ClothingItem 
                         v-for="item in pickedUpClothingItems"
+                        v-on:delete="deleteHandler"
                         v-bind:key="item"
                         v-bind:item="item"
                     />
@@ -81,7 +84,7 @@
     import ClothingItem from './ClothingItem.vue';
     export default {
         name: 'UserDashboard',
-        components: {ClothingItem},
+        components: { ClothingItem },
         props: ['username'],
         data() {
             return {
@@ -153,6 +156,15 @@
                 };
                 getUserPickedUpClothing(fields, this.pickedUpSuccess, this.pickedUpError);
                 this.activeList = 'pickedUp';
+            },
+            deleteHandler() {
+                if (this.activeList == 'donated') {
+                    this.getDonated();
+                } else if (this.activeList == 'pending') {
+                    this.getPending();
+                } else if (this.activeList == 'pickedUp') {
+                    this.getPickedUp();
+                }
             },
             uploadHandler() {
                 const fields = {

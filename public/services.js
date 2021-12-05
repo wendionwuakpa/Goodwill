@@ -63,3 +63,11 @@ function donateClothingItem(fields, callbackSuccess, callbackFailure) {
     .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
     .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
 }
+
+function deleteClothingItem(fields, callbackSuccess, callbackFailure) {
+  console.log('service');
+  console.log(fields);
+  axios.delete('/api/clothing/' + fields.id)
+    .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
+    .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
+}
