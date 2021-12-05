@@ -1,7 +1,9 @@
 const express = require('express');
 const path = require('path');
 const controller = require("./controller"); 
-require('dotenv').config();
+const http = require('http');
+
+// require('dotenv').config();
 
 // database
 const cors = require('cors');
@@ -22,6 +24,15 @@ db.mongoose
 
 
 const app = express();
+
+
+app.set('port', 3000);
+
+const server = http.createServer(app);
+
+
+server.listen(3000);
+
 app.use(cors());
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({ limit: '50mb', extended: false, parameterLimit: 50000}));
