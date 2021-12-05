@@ -18,6 +18,7 @@
         />
         <UserDashboard 
           v-bind:username="username"
+          v-bind:isAdmin="isAdmin"
           v-if="activePage == 'UserDashboard'"
         />
       </span>
@@ -41,6 +42,7 @@
             return {
                 username: null,
                 password: null,
+                isAdmin: null,
                 activePage: 'LandingPage'
             }
         },
@@ -49,33 +51,43 @@
             // not very secure
             let username = localStorage.user;
             let password = localStorage.pass;
-            this.signInHandler(username, password);
+            let isAdmin = localStorage.admin;
+            this.signInHandler(username, password, isAdmin);
           }
         },
         methods: {
-            getUserSuccess(obj) { // obj returned in response
-            console.log('hii');
-            console.log(obj);
-              let username = obj.data.username;
-              let password = obj.data.password;
-              this.signInHandler(username, password)
-            },
-            getUserFailure(obj) { // obj returned in reponse
-              // console.log(obj); // uncomment for debugging
-              this.signOutHandler();
-            },
-            signInHandler(username, password) {
+            // getUserSuccess(obj) { // obj returned in response
+            // console.log('hii');
+            // console.log(obj);
+            //   let username = obj.data.username;
+            //   let password = obj.data.password;
+            //   this.signInHandler(username, password)
+            // },
+            // getUserFailure(obj) { // obj returned in reponse
+            //   // console.log(obj); // uncomment for debugging
+            //   this.signOutHandler();
+            // },
+            signInHandler(username, password, isAdmin) {
               this.username = username;
               this.password = password;
+              this.isAdmin = isAdmin;
               localStorage.user = username;
               localStorage.pass = password;
-              this.activePage = 'UserDashboard';
+              localStorage.admin = isAdmin;
+              if (isAdmin) {
+                this.activePage = 'UserDashboard';
+                // this.activePage = 'AdminDashboard';
+              } else {
+                this.activePage = 'UserDashboard';
+              }
             },
             signOutHandler() {
               this.username = null;
               this.password = null;
+              this.isAdmin = null;
               localStorage.user = null;
               localStorage.pass = null;
+              localStorage.admin = null;
               this.activePage = 'LandingPage';
             }
         }

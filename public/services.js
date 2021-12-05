@@ -40,6 +40,18 @@ function getAllClothing(callbackSuccess, callbackFailure) {
     .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
 }
 
+function getAllPendingClothing(callbackSuccess, callbackFailure) {
+  axios.get('/api/clothing/admin_pending') 
+    .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
+    .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
+}
+
+function getAllPickedUpClothing(callbackSuccess, callbackFailure) {
+  axios.get('/api/clothing/admin_pickedup') 
+    .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
+    .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
+}
+
 function getUserDonatedClothing(fields, callbackSuccess, callbackFailure) {
   axios.get('/api/clothing/donated/' + fields.username) 
     .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)

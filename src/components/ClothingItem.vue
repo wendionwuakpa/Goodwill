@@ -9,7 +9,8 @@
                 <div class="row"> Type: {{item.size}} </div>
                 <div class="row"> Type: {{item.condition}} </div>
                 <div class="row"> Donated: {{ item.date_uploaded.split("T")[0]}} </div>
-                <input class="delete" type="button" value="Delete" v-on:click="deleteHandler"/>
+                <div v-if="isAdmin==true" class="row"> Donator: {{ item.donator }} </div>
+                <input v-if="isAdmin==false" class="delete" type="button" value="Delete" v-on:click="deleteHandler"/>
             </div>
         </div>
     </div>
@@ -19,7 +20,7 @@
 <script>
     export default {
         name: 'ClothingItem',
-        props: ['item'],
+        props: ['item', 'isAdmin'],
         data() {
             return {
             }

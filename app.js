@@ -45,11 +45,18 @@ app.post(
   async (req, res) => {
       let username = req.body.username;
       let password = req.body.password;
-      const user = await controller.addUserWithCredentials(username, password);
+      let isAdmin = req.body.admin;
+      let user = await controller.addUserWithCredentials(username, password, isAdmin);
       let status = 200; // status code for ok
+      console.log(user);
       if (typeof user == "string") {
           status = 500; // status code for internal server error
-
+      } else {
+        user = {
+          username: user[0].username,
+          password: user[0].password,
+          isAdmin: user[1]
+        }
       }
       res.status(status).json(user).end();
 });
@@ -58,10 +65,16 @@ app.get('/api/users/:username?/:password?',
   async (req, res) => {
       let username = req.params.username;
       let password = req.params.password;
-      const user = await controller.getUserWithCredentials(username, password);
+      let user = await controller.getUserWithCredentials(username, password);
       let status = 200; // status code for ok
       if (typeof user == "string") {
         status = 500; // status code for internal server error
+      } else {
+        user = {
+          username: user[0].username,
+          password: user[0].password,
+          isAdmin: user[1]
+        }
       }
       res.status(status).json(user).end();
 });
@@ -73,6 +86,24 @@ app.get('/api/clothing/', [], async (req, res) => {
       status = 500; // status code for internal server error
     }
     res.status(status).json(clothing).end(); 
+})
+
+app.get('/api/clothing/admin_pending', [], async (req, res) => {
+  const clothing = await controller.getAllPendingClothingItems();
+  let status = 200; // status code for ok
+  if (typeof clothing == "string") {
+    status = 500; // status code for internal server error
+  }
+  res.status(status).json(clothing).end(); 
+})
+
+app.get('/api/clothing/admin_pickedup', [], async (req, res) => {
+  const clothing = await controller.getAllPickedUpClothingItems();
+  let status = 200; // status code for ok
+  if (typeof clothing == "string") {
+    status = 500; // status code for internal server error
+  }
+  res.status(status).json(clothing).end(); 
 })
 
 app.delete('/api/clothing/:id?', [], async (req, res) => {

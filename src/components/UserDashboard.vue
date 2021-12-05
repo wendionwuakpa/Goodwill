@@ -2,7 +2,7 @@
     <section class="dashboard">
         <h3 class="header"> Dashboard </h3>
         <span class="dash-container">
-            <section class="dash-area add-form">
+            <section v-if="isAdmin==false" class="dash-area add-form">
                 <h3> Donate Item </h3>
                 <div>
                     <label>Title</label>
@@ -43,7 +43,8 @@
                 <input :disabled="!formComplete" type="button" value="Upload" v-on:click="uploadHandler"/>
                 <p class="form-end"> {{ errorDonate }} </p>
             </section>
-            <section class="dash-area list">
+            <!-- donator -->
+            <section v-if="isAdmin==false" class="dash-area list">
                 <h3> Clothing Items </h3>
                 <div class="toggle-container">
                     <input :class="{active: activeList=='donated'}" type="button" value="All Donated" v-on:click="getDonated"/>
@@ -56,6 +57,7 @@
                         v-on:delete="deleteHandler"
                         v-bind:key="item._id"
                         v-bind:item="item"
+                        v-bind:isAdmin="isAdmin"
                     />
                 </section>
                 <section class="item-list scrollbox" v-if="activeList == 'pending'">
@@ -64,6 +66,7 @@
                         v-on:delete="deleteHandler"
                         v-bind:key="item"
                         v-bind:item="item"
+                        v-bind:isAdmin="isAdmin"
                     />
                 </section>
                 <section class="item-list scrollbox" v-if="activeList == 'pickedUp'">
@@ -72,6 +75,33 @@
                         v-on:delete="deleteHandler"
                         v-bind:key="item"
                         v-bind:item="item"
+                        v-bind:isAdmin="isAdmin"
+                    />
+                </section>
+            </section>
+            <!-- admin -->
+            <section v-if="isAdmin==true" class="dash-area list">
+                <h3> Clothing Items </h3>
+                <div class="toggle-container">
+                    <input :class="{active: activeList=='pending'}" type="button" value="Pending" v-on:click="getAdminPending"/>
+                    <input :class="{active: activeList=='pickedUp'}" type="button" value="Picked Up" v-on:click="getAdminPickedUp"/>
+                </div>
+                <section class="item-list scrollbox" v-if="activeList == 'pending'">
+                    <ClothingItem 
+                        v-for="item in adminPendingClothingItems"
+                        v-on:delete="deleteHandler"
+                        v-bind:key="item"
+                        v-bind:item="item"
+                        v-bind:isAdmin="isAdmin"
+                    />
+                </section>
+                <section class="item-list scrollbox" v-if="activeList == 'pickedUp'">
+                    <ClothingItem 
+                        v-for="item in adminPickedUpClothingItems"
+                        v-on:delete="deleteHandler"
+                        v-bind:key="item"
+                        v-bind:item="item"
+                        v-bind:isAdmin="isAdmin"
                     />
                 </section>
             </section>
@@ -85,13 +115,15 @@
     export default {
         name: 'UserDashboard',
         components: { ClothingItem },
-        props: ['username'],
+        props: ['username', 'isAdmin'],
         data() {
             return {
-                activeList: 'donated',
+                activeList: 'pending',
                 donatedClothingItems: [],
                 pendingClothingItems: [],
                 pickedUpClothingItems: [],
+                adminPendingClothingItems: [],
+                adminPickedUpClothingItems: [],
                 title: '',
                 imageLink: '',
                 errorDonate: null,
@@ -133,7 +165,11 @@
             }
         },
         mounted() {
-            this.getDonated();
+            if (this.isAdmin == true) {
+                this.getAdminPending();
+            } else {
+                this.getPending();
+            }
         },
         methods: {
             getDonated() {
@@ -155,6 +191,14 @@
                     username: this.username
                 };
                 getUserPickedUpClothing(fields, this.pickedUpSuccess, this.pickedUpError);
+                this.activeList = 'pickedUp';
+            },
+            getAdminPending() {
+                getAllPendingClothing(this.adminPendingSuccess, this.adminPendingError);
+                this.activeList = 'pending';
+            },
+            getAdminPickedUp() {
+                getAllPickedUpClothing(this.adminPickedUpSuccess, this.adminPickedUpError);
                 this.activeList = 'pickedUp';
             },
             deleteHandler() {
@@ -194,6 +238,18 @@
                 this.pickedUpClothingItems = obj.data;
             },
             pickedUpError(obj) {
+                console.log(obj);
+            },
+            adminPendingSuccess(obj) {
+                this.adminPendingClothingItems = obj.data;
+            },
+            adminPendingError(obj) {
+                console.log(obj);
+            },
+            adminPickedUpSuccess(obj) {
+                this.adminPickedUpClothingItems = obj.data;
+            },
+            adminPickedUpError(obj) {
                 console.log(obj);
             },
             uploadSuccess(obj) {

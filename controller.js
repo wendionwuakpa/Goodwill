@@ -10,42 +10,47 @@ async function getUser(username) {
         const user = await User.findOne({ username : username });
         return user;
     } catch(err) {
-        return "Something went wrong in getUser."
+        return "Something went wrong in getUser.";
     }
 }
 
 // 2-CHANGE: finds admin with username
 async function getAdmin(username) {
     try {
-        const admin = await Administrator.find({ username :  { $eq : "admin" }});
+        const admin = await Administrator.find({ username : username });
         return admin;
     } catch(err) {
-        return "Something went wrong in getAdmin."
+        return "Something went wrong in getAdmin.";
     }
 }
 
-// 3-CHANGE: finds admin with credentials
-async function getAdminWithCredentials(username, password) {
-    try {
-        const admin = await Administrator.find({ username :  { $eq : "admin" }, 
-        password :  { $eq : "pass123" } });
-        if (admin == null) {
-            return "Username and/or password is incorrect."
-        }
-        return admin;
-    } catch(err) {
-        return "Something went wrong in getAdminWithCredentials."
-    }
+// // 3-CHANGE: finds admin with credentials
+// async function getAdminWithCredentials(username, password) {
+//     try {
+//         const admin = await Administrator.find({ username : "admin" , password : "pass123" });
+//         if (admin == null) {
+//             return "Username and/or password is incorrect.";
+//         }
+//         return admin;
+//     } catch(err) {
+//         return "Something went wrong in getAdminWithCredentials.";
+//     }
+// }
 
 
 // finds user with credentials
 async function getUserWithCredentials(username, password) {
     try {
         const user = await User.findOne({ username : username, password : password });
-        if (user == null) {
+        const admin = await Administrator.findOne({ username : username, password : password });
+        if (user == null && admin == null) {
             return "Username and/or password is incorrect."
         }
-        return user;
+        else if (user != null) {
+            return [user, false];
+        } else if (admin != null) {
+            return [admin, true];
+        }
     } catch(err) {
         return "Something went wrong in getUserWithCredentials."
     }
@@ -54,19 +59,32 @@ async function getUserWithCredentials(username, password) {
 
 //4-CHANGE: Checked if the username is equal to admin.
 // adds user with credentials
-async function addUserWithCredentials(username, password) {
+async function addUserWithCredentials(username, password, isAdmin) {
     try {
         const userFound = await User.findOne({ username : username });
-        if (userFound != null || userFound == "admin") {
+        const adminFound = await Administrator.findOne({ username : username });
+        if (userFound != null || adminFound != null) {
             return "Username is already claimed.";
         }
         // if username not claimed
-        const user = new User({
-            username: username,
-            password: password
-        });
+        let user = null;
+        if (isAdmin) {
+            user = new Administrator({
+                username: username,
+                password: password
+            });
+        } else {
+            user = new User({
+                username: username,
+                password: password
+            });
+        }
         await user.save();
-        return user;
+        if (isAdmin) {
+            return [user, true];
+        } else {
+            return [user, false];
+        }
     } catch(err) {
         return "Something went wrong in addUserWithCredentials."
     }
@@ -104,19 +122,9 @@ ISSUE: donated_clothes is never used.
 - store all the usernames in an array
 - find the clothing_id
 */
-async function getAdminPendingClothingItems() {
+async function getAllPendingClothingItems() {
     try {
-      console.log(username);
-      //const user = await User.find({username: username}); 
-      // dont need because we created a new registered_users container 
-
-      //returns all the users?
-      let users = Administrator.user;
-
-      let clothing_ids = Administrator.user.donated_clothes; // ClothingItem ids stored in user's claimed clothing
-      console.log(Administrator.user.donated_clothes);
-      const donated_clothes = await user.Clothing.find({ _id: { $in : clothing_ids }});
-      const pending_clothes = donated_clothes.filter(item => item.picked_up == false);
+      const pending_clothes = await Clothing.find({ picked_up : false });
       return pending_clothes;
     } catch(err) {
       return "Something went wrong in getAdminPendingClothingItems."
@@ -142,13 +150,10 @@ async function getUserPendingClothingItems(username) {
 
 
 // gets all clothing items donated by all users
-async function getAdminPickedUpClothingItems() {
+async function getAllPickedUpClothingItems() {
     try {
       //get all the users
-      let users = Administrator.user;
-      const clothing_ids = users.donated_clothes; // ClothingItem ids stored in user's claimed clothing
-      const donated_clothes = await Clothing.find({ _id: { $in : clothing_ids }});
-      const picked_up_clothes = donated_clothes.filter(item => item.picked_up == true);
+      const pending_clothes = await Clothing.find({ picked_up : true });
       return picked_up_clothes;
     } catch(err) {
       return "Something went wrong in getAdminPickedUpClothingItems."
@@ -204,24 +209,24 @@ async function donateClothingItem(clothing_type, condition, size, brand, image, 
 Logic: remove from donated and add to pending
 */
 async function processDonatedtoPending(id) {
-
     try {
-        clothingToMove = Clothing.findOne({})
-
-        
+        let clothingToMove = await Clothing.findOne({ _id : id});
+        clothingToMove.picked_up = true;
+        await clothingToMove.save();
+        return clothingToMove;
     } catch (err) {
         return "Something went wrong with processDonatedtoPending";
     }
-};
+}
 
 //moves items from pending to picked up
 async function processPendingtoPickedUp(id) {
     try {
-        
+        console.log('temp');
     } catch (err) {
         return "Something went wrong with processPendingtoPickedUp";
     }
-};
+}
 
 async function deleteClothingItem(id) {
     try {
@@ -237,14 +242,15 @@ module.exports = Object.freeze({
     getUser,
     getAdmin,
     getUserWithCredentials,
-    getAdminWithCredentials,
     addUserWithCredentials,
     getAllClothingItems,
     getUserDonatedClothingItems,
     getUserPendingClothingItems,
-    getAdminPendingClothingItems,
+    getUserPickedUpClothingItems,
+    getAllPendingClothingItems,
+    getAllPickedUpClothingItems,
     donateClothingItem,
     deleteClothingItem,
     processDonatedtoPending,
     processPendingtoPickedUp
-  })};
+});

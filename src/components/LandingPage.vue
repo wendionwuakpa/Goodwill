@@ -20,6 +20,18 @@
             <section class="create-account form">
                 <h3 class="form-header"> Create Account </h3>
                 <div>
+                    <label for="types">Account Type</label>
+                    <select class="dropdown" v-model="account">
+                        <option v-for="option in accountOptions" v-bind:key="option.value" v-bind:value="option.value">
+                            {{ option.text }}
+                        </option> 
+                    </select>
+                </div>
+                <div v-if="account == 'Administrator'">
+                    <label>Admin Token</label>
+                    <input type="password" v-model="tokenAdmin">
+                </div>
+                <div>
                     <label>Username</label>
                     <input type="text" v-model="usernameCreate">
                 </div> 
@@ -35,7 +47,6 @@
                 <input :disabled="createDisabled" type="button" value="Create Account" v-on:click="createAccountHandler"/>
                 <p class="form-end"> {{ errorCreate }} </p>
             </section>
-
         </span>
     </section>
 </template>
@@ -52,7 +63,14 @@
                 usernameCreate: '',
                 passwordCreate1: '',
                 passwordCreate2: '',
-                errorCreate: null
+                tokenAdmin: '',
+                staticToken: '1234', // administrators need to know this token
+                errorCreate: null,
+                account: 'Donator',
+                accountOptions: [
+                    {text: 'Donator', value: 'Donator'},
+                    {text: 'Administrator', value: 'Administrator'}
+                ]
             }
         },
         computed: {
@@ -77,16 +95,34 @@
             },
             createAccountHandler() {
                 this.errorCreate = null;
-                const fields = {
-                    username: this.usernameCreate,
-                    password: this.passwordCreate1
-                };
-                addUser(fields, this.success, this.createAccountError);
+                
+                if (this.account == 'Donator') {
+                    const fields = {
+                        username: this.usernameCreate,
+                        password: this.passwordCreate1,
+                        admin: false
+                    };
+                    addUser(fields, this.success, this.createAccountError);
+                } 
+                else if (this.account == 'Administrator') {
+                    if (this.tokenAdmin != this.staticToken) {
+                        this.errorCreate = 'Token is inavlid';
+                    } else {
+                        const fields = {
+                            username: this.usernameCreate,
+                            password: this.passwordCreate1,
+                            admin: true
+                        };
+                        addUser(fields, this.success, this.createAccountError);
+                    }
+                }
             },
             success(obj) {
                 const username = obj.data.username;
                 const password = obj.data.password;
-                this.$emit('user', username, password); 
+                const isAdmin = obj.data.isAdmin;
+                console.log(obj);
+                this.$emit('user', username, password, isAdmin); 
             },
             signInError(obj) {
                 this.errorSignIn = obj.data;
