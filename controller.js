@@ -1,3 +1,4 @@
+const Administrator = require('./models/Administrator');
 const Clothing = require('./models/ClothingItem');
 const User = require('./models/User');
 
@@ -12,6 +13,29 @@ async function getUser(username) {
         return "Something went wrong in getUser."
     }
 }
+
+// 2-CHANGE: finds admin with username
+async function getAdmin(username) {
+    try {
+        const admin = await Administrator.find({ username :  { $eq : "admin" }});
+        return admin;
+    } catch(err) {
+        return "Something went wrong in getAdmin."
+    }
+}
+
+// 3-CHANGE: finds admin with credentials
+async function getAdminWithCredentials(username, password) {
+    try {
+        const admin = await Administrator.find({ username :  { $eq : "admin" }, 
+        password :  { $eq : "pass123" } });
+        if (admin == null) {
+            return "Username and/or password is incorrect."
+        }
+        return admin;
+    } catch(err) {
+        return "Something went wrong in getAdminWithCredentials."
+    }
 
 
 // finds user with credentials
@@ -28,11 +52,12 @@ async function getUserWithCredentials(username, password) {
 }
 
 
+//4-CHANGE: Checked if the username is equal to admin.
 // adds user with credentials
 async function addUserWithCredentials(username, password) {
     try {
         const userFound = await User.findOne({ username : username });
-        if (userFound != null) {
+        if (userFound != null || userFound == "admin") {
             return "Username is already claimed.";
         }
         // if username not claimed
@@ -73,6 +98,32 @@ async function getUserDonatedClothingItems(username) {
     }
 };
 
+//5-CHANGE: gets all clothing items donated by all users, yet to be picked up
+/*
+ISSUE: donated_clothes is never used.
+- store all the usernames in an array
+- find the clothing_id
+*/
+async function getAdminPendingClothingItems() {
+    try {
+      console.log(username);
+      //const user = await User.find({username: username}); 
+      // dont need because we created a new registered_users container 
+
+      //returns all the users?
+      let users = Administrator.user;
+
+      let clothing_ids = Administrator.user.donated_clothes; // ClothingItem ids stored in user's claimed clothing
+      console.log(Administrator.user.donated_clothes);
+      const donated_clothes = await user.Clothing.find({ _id: { $in : clothing_ids }});
+      const pending_clothes = donated_clothes.filter(item => item.picked_up == false);
+      return pending_clothes;
+    } catch(err) {
+      return "Something went wrong in getAdminPendingClothingItems."
+    }
+};
+
+
 // gets all clothing items donated by user with specified username
 async function getUserPendingClothingItems(username) {
     try {
@@ -89,6 +140,21 @@ async function getUserPendingClothingItems(username) {
     }
 };
 
+
+// gets all clothing items donated by all users
+async function getAdminPickedUpClothingItems() {
+    try {
+      //get all the users
+      let users = Administrator.user;
+      const clothing_ids = users.donated_clothes; // ClothingItem ids stored in user's claimed clothing
+      const donated_clothes = await Clothing.find({ _id: { $in : clothing_ids }});
+      const picked_up_clothes = donated_clothes.filter(item => item.picked_up == true);
+      return picked_up_clothes;
+    } catch(err) {
+      return "Something went wrong in getAdminPickedUpClothingItems."
+    }
+};
+
 // gets all clothing items donated by user with specified username
 async function getUserPickedUpClothingItems(username) {
     try {
@@ -100,7 +166,7 @@ async function getUserPickedUpClothingItems(username) {
     } catch(err) {
       return "Something went wrong in getUserPickedUpClothingItems."
     }
-};
+}
 
 // adds a clothing item
 async function donateClothingItem(clothing_type, condition, size, brand, image, donator, title) {
@@ -128,6 +194,35 @@ async function donateClothingItem(clothing_type, condition, size, brand, image, 
     }  
 } 
 
+/* The administrator is the only user when given an id can move an item from donated to pending
+
+ user = db.users.findOne({'nickname': 'user1'})
+> user.nickname = 'userX'
+> delete user['_id']
+> db.users.insert(user)
+
+Logic: remove from donated and add to pending
+*/
+async function processDonatedtoPending(id) {
+
+    try {
+        clothingToMove = Clothing.findOne({})
+
+        
+    } catch (err) {
+        return "Something went wrong with processDonatedtoPending";
+    }
+};
+
+//moves items from pending to picked up
+async function processPendingtoPickedUp(id) {
+    try {
+        
+    } catch (err) {
+        return "Something went wrong with processPendingtoPickedUp";
+    }
+};
+
 async function deleteClothingItem(id) {
     try {
         console.log(id);
@@ -140,12 +235,16 @@ async function deleteClothingItem(id) {
 
 module.exports = Object.freeze({
     getUser,
+    getAdmin,
     getUserWithCredentials,
+    getAdminWithCredentials,
     addUserWithCredentials,
     getAllClothingItems,
     getUserDonatedClothingItems,
     getUserPendingClothingItems,
-    getUserPickedUpClothingItems,
+    getAdminPendingClothingItems,
     donateClothingItem,
-    deleteClothingItem
-  });
+    deleteClothingItem,
+    processDonatedtoPending,
+    processPendingtoPickedUp
+  })};
