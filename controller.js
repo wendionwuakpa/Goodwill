@@ -174,7 +174,7 @@ async function getUserPickedUpClothingItems(username) {
 }
 
 // adds a clothing item
-async function donateClothingItem(clothing_type, condition, size, brand, image, donator, title, address) {
+async function donateClothingItem(clothing_type, condition, size, brand, address, image, donator, title) {
     try {
         // add clothing item
         const clothing_item = new Clothing({
@@ -187,15 +187,11 @@ async function donateClothingItem(clothing_type, condition, size, brand, image, 
             title: title,
             address: address,
         });
-        console.log(clothing_item);
-        clothing_item.markModified('brand');
         await clothing_item.save();
 
         // add clothing item to user's donated_clothes
         const user = await getUser(donator); // calls function to get user with username (same as donator)
         user.donated_clothes.push(clothing_item._id);
-        user.markModified('donated_clothes');
-        donated_clothes.markModified('clothing_item');
         await user.save();
         return clothing_item; 
     } catch(err) { 

@@ -39,7 +39,7 @@
                     </select>
                 </div>
                 <div>
-                    <label>Address</label>
+                    <label>Pickup Address</label>
                     <input type="text" v-model="address">
                 </div> 
                 <div>

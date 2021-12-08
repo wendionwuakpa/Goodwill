@@ -5,13 +5,14 @@
             <div class="details">
                 <div class="row"> <h4> {{item.title}} </h4></div>
                 <div class="row"> Type: {{item.clothing_type}} </div>
-                <div class="row"> Type: {{item.brand}} </div>
-                <div class="row"> Type: {{item.size}} </div>
-                <div class="row"> Type: {{item.condition}} </div>
-                <div class="row"> Type: {{item.address}} </div>
+                <div class="row"> Brand: {{item.brand}} </div>
+                <div class="row"> Size: {{item.size}} </div>
+                <div class="row"> Condition: {{item.condition}} </div>
+                <div class="row"> Pickup Address: {{item.address}} </div>
                 <div class="row"> Donated: {{ item.date_uploaded.split("T")[0]}} </div>
+                <div class="row"> Picked Up: {{ item.picked_up }} </div>
                 <div v-if="isAdmin==true" class="row"> Donator: {{ item.donator }} </div>
-                <input v-if="isAdmin==false" class="delete" type="button" value="Delete" v-on:click="deleteHandler">
+                <input v-if="isAdmin==false && !item.picked_up" class="delete" type="button" value="Delete" v-on:click="deleteHandler">
                 <input v-if="isAdmin==true && activeList == 'pending'" class="delete" type="button" value="Picked Up" v-on:click="pickUpHandler"/>
             </div>
         </div>
