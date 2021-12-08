@@ -1,8 +1,8 @@
 // Axios responses have a lot of data. This shows only the most relevant data.
 function showResponse(axiosResponse, callback) {
   const fullResponse = axiosResponse.response === undefined
-    ? axiosResponse
-    : axiosResponse.response;
+    ? axiosResponse //t
+    : axiosResponse.response; //f
   const abridgedResponse = {
     data: fullResponse.data,
     status: fullResponse.status,
@@ -68,6 +68,12 @@ function getUserPickedUpClothing(fields, callbackSuccess, callbackFailure) {
   axios.get('/api/clothing/pickedup/' + fields.username) 
     .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
     .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
+}
+
+function pickUpUserClothing(fields, callbackSuccess, callbackFailure ) {
+  axios.put('/api/clothing/pickup' , fields) 
+  .then(response => showResponse(response, callbackSuccess)) // on success (Status Code 200)
+  .catch(response => showResponse(response, callbackFailure)); // on failure (Other Status Code)
 }
 
 function donateClothingItem(fields, callbackSuccess, callbackFailure) {

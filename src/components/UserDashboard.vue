@@ -1,4 +1,6 @@
+
 <template>
+<!-- add address functionality -->
     <section class="dashboard">
         <h3 class="header"> Dashboard </h3>
         <span class="dash-container">
@@ -37,12 +39,17 @@
                     </select>
                 </div>
                 <div>
+                    <label>Address</label>
+                    <input type="text" v-model="address">
+                </div> 
+                <div>
                     <label>Image Link</label>
                     <input type="text" v-model="imageLink">
                 </div>
                 <input :disabled="!formComplete" type="button" value="Upload" v-on:click="uploadHandler"/>
                 <p class="form-end"> {{ errorDonate }} </p>
             </section>
+
             <!-- donator -->
             <section v-if="isAdmin==false" class="dash-area list">
                 <h3> Clothing Items </h3>
@@ -58,6 +65,8 @@
                         v-bind:key="item._id"
                         v-bind:item="item"
                         v-bind:isAdmin="isAdmin"
+                        v-on:pickUp="pickUpHandler"
+                        v-bind:activeList="activeList"
                     />
                 </section>
                 <section class="item-list scrollbox" v-if="activeList == 'pending'">
@@ -67,6 +76,9 @@
                         v-bind:key="item"
                         v-bind:item="item"
                         v-bind:isAdmin="isAdmin"
+                        v-on:pickUp="pickUpHandler"
+                        v-bind:activeList="activeList"
+
                     />
                 </section>
                 <section class="item-list scrollbox" v-if="activeList == 'pickedUp'">
@@ -76,6 +88,9 @@
                         v-bind:key="item"
                         v-bind:item="item"
                         v-bind:isAdmin="isAdmin"
+                        v-on:pickUp="pickUpHandler"
+                        v-bind:activeList="activeList"
+
                     />
                 </section>
             </section>
@@ -93,6 +108,8 @@
                         v-bind:key="item"
                         v-bind:item="item"
                         v-bind:isAdmin="isAdmin"
+                        v-on:pickUp="pickUpHandler"
+                        v-bind:activeList="activeList"
                     />
                 </section>
                 <section class="item-list scrollbox" v-if="activeList == 'pickedUp'">
@@ -102,6 +119,8 @@
                         v-bind:key="item"
                         v-bind:item="item"
                         v-bind:isAdmin="isAdmin"
+                        v-on:pickUp="pickUpHandler"
+                        v-bind:activeList="activeList"
                     />
                 </section>
             </section>
@@ -149,6 +168,7 @@
                     { text: 'Like New', value: 'Like New'},
                     { text: 'Used', value: 'Used'},
                 ],
+                address: '',
                 brand: ''
             }
         },
@@ -156,6 +176,7 @@
             formComplete: function() {
                 return (
                     this.title != '' && 
+                    this.address != '' && 
                     this.imageLink != '' && 
                     this.clothingType != '' && 
                     this.condition != '' && 
@@ -210,6 +231,16 @@
                     this.getPickedUp();
                 }
             },
+
+            pickUpHandler() {
+                if (this.activeList == 'pending') {
+                    this.getAdminPending();
+                } else if (this.activeList == 'pickedUp') {
+                    this.getAdminPickedUp();
+                }
+
+            },
+
             uploadHandler() {
                 const fields = {
                     title: this.title,
@@ -217,6 +248,7 @@
                     size: this.size,
                     brand: this.brand,
                     condition: this.condition,
+                    address: this.address,
                     image: this.imageLink,
                     donator: this.username
                 }

@@ -8,9 +8,11 @@
                 <div class="row"> Type: {{item.brand}} </div>
                 <div class="row"> Type: {{item.size}} </div>
                 <div class="row"> Type: {{item.condition}} </div>
+                <div class="row"> Type: {{item.address}} </div>
                 <div class="row"> Donated: {{ item.date_uploaded.split("T")[0]}} </div>
                 <div v-if="isAdmin==true" class="row"> Donator: {{ item.donator }} </div>
-                <input v-if="isAdmin==false" class="delete" type="button" value="Delete" v-on:click="deleteHandler"/>
+                <input v-if="isAdmin==false" class="delete" type="button" value="Delete" v-on:click="deleteHandler">
+                <input v-if="isAdmin==true && activeList == 'pending'" class="delete" type="button" value="Picked Up" v-on:click="pickUpHandler"/>
             </div>
         </div>
     </div>
@@ -20,7 +22,7 @@
 <script>
     export default {
         name: 'ClothingItem',
-        props: ['item', 'isAdmin'],
+        props: ['item', 'isAdmin', 'activeList'],
         data() {
             return {
             }
@@ -40,6 +42,20 @@
                 this.$emit('delete');
             },
             deleteError(obj) {
+                console.log(obj);
+            },
+
+            pickUpHandler() {
+                console.log('pick up handler');
+                const fields = {
+                    id: this.item._id //specific clothing 
+                };
+                pickUpUserClothing(fields, this.pickSuccess, this.pickError);
+            },
+            pickSuccess(obj) {
+                this.$emit('pickUp');
+            },
+            pickError(obj) {
                 console.log(obj);
             }
             

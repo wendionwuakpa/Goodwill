@@ -145,15 +145,28 @@ app.get('/api/clothing/pickedup/:username?', [], async (req, res) => {
     res.status(status).json(clothing).end(); 
   })
 
+  app.put('/api/clothing/pickup', [], async (req, res) => {
+    let id = req.body.id;
+    const clothing = await controller.processPendingtoPickedUp(id);
+    let status = 200; // status code for ok
+    if (typeof clothing == "string") {
+        status = 500; // status code for internal server error
+    }
+    res.status(status).json(clothing).end(); 
+
+  })
+
 app.post('/api/clothing/', [], async (req, res) => {
   let clothing_type = req.body.clothing_type;
   let condition = req.body.condition;
   let size = req.body.size;
   let brand = req.body.brand;
+  let address = req.body.address
   let image = req.body.image;
   let donator = req.body.donator;
   let title = req.body.title;
-  const clothing_item = await controller.donateClothingItem(clothing_type, condition, size, brand, image, donator, title);
+  const clothing_item = await controller.donateClothingItem(clothing_type, condition, size, brand, address, image, donator, title);
+  console.log(clothing_item);
   let status = 200; // status code for ok
   if (typeof clothing_item == "string") {
       status = 500; // status code for internal server error

@@ -32,6 +32,12 @@ const ClothingItemSchema = new Schema(
             default: null
         },
 
+        //address the clothing item should be delivered to 
+        "address": {
+            type: String,
+            required: true,
+        },
+
         // image link of clothing
         "image": {
             type: String,

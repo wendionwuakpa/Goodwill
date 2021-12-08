@@ -153,7 +153,7 @@ async function getUserPendingClothingItems(username) {
 async function getAllPickedUpClothingItems() {
     try {
       //get all the users
-      const pending_clothes = await Clothing.find({ picked_up : true });
+      const picked_up_clothes = await Clothing.find({ picked_up : true });
       return picked_up_clothes;
     } catch(err) {
       return "Something went wrong in getAdminPickedUpClothingItems."
@@ -174,7 +174,7 @@ async function getUserPickedUpClothingItems(username) {
 }
 
 // adds a clothing item
-async function donateClothingItem(clothing_type, condition, size, brand, image, donator, title) {
+async function donateClothingItem(clothing_type, condition, size, brand, image, donator, title, address) {
     try {
         // add clothing item
         const clothing_item = new Clothing({
@@ -184,14 +184,18 @@ async function donateClothingItem(clothing_type, condition, size, brand, image, 
             brand: brand,
             image: image,
             donator: donator,
-            title: title
+            title: title,
+            address: address,
         });
         console.log(clothing_item);
+        clothing_item.markModified('brand');
         await clothing_item.save();
 
         // add clothing item to user's donated_clothes
         const user = await getUser(donator); // calls function to get user with username (same as donator)
         user.donated_clothes.push(clothing_item._id);
+        user.markModified('donated_clothes');
+        donated_clothes.markModified('clothing_item');
         await user.save();
         return clothing_item; 
     } catch(err) { 
@@ -208,25 +212,18 @@ async function donateClothingItem(clothing_type, condition, size, brand, image, 
 
 Logic: remove from donated and add to pending
 */
-async function processDonatedtoPending(id) {
+async function processPendingtoPickedUp(id) {
     try {
         let clothingToMove = await Clothing.findOne({ _id : id});
         clothingToMove.picked_up = true;
+        console.log('hi');
         await clothingToMove.save();
         return clothingToMove;
-    } catch (err) {
-        return "Something went wrong with processDonatedtoPending";
-    }
-}
-
-//moves items from pending to picked up
-async function processPendingtoPickedUp(id) {
-    try {
-        console.log('temp');
     } catch (err) {
         return "Something went wrong with processPendingtoPickedUp";
     }
 }
+
 
 async function deleteClothingItem(id) {
     try {
@@ -251,6 +248,5 @@ module.exports = Object.freeze({
     getAllPickedUpClothingItems,
     donateClothingItem,
     deleteClothingItem,
-    processDonatedtoPending,
     processPendingtoPickedUp
 });
